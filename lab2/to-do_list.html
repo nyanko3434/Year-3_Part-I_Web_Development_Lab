@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        .completed { text-decoration: line-through; color: gray; }
+    </style>
+</head>
+<body>
+    <h1>Dynamic To-Do List</h1>
+    
+    <div>
+        <input type="text" id="taskInput" placeholder="Enter a task">
+        <button onclick="addTask()">Add Task</button>
+    </div>
+    
+    <div>
+        <h3>Filter:</h3>
+        <button onclick="filterTasks('all')">All</button>
+        <button onclick="filterTasks('completed')">Completed</button>
+        <button onclick="filterTasks('pending')">Pending</button>
+    </div>
+    
+    <p>Completed Tasks: <span id="completedCount">0</span></p>
+    
+    <ul id="taskList"></ul>
+
+    <script>
+        let tasks = [];
+        let currentFilter = 'all';
+
+        // Load tasks from localStorage on page load
+        window.onload = function() {
+            const savedTasks = localStorage.getItem('tasks');
+            if (savedTasks) {
+                tasks = JSON.parse(savedTasks);
+            }
+            displayTasks();
+        };
+
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const taskText = input.value.trim();
+            
+            if (taskText === '') {
+                alert('Please enter a task!');
+                return;
+            }
+            
+            const task = {
+                id: Date.now(),
+                text: taskText,
+                completed: false
+            };
+            
+            tasks.push(task);
+            input.value = '';
+            saveTasks();
+            displayTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            saveTasks();
+            displayTasks();
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(task => task.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+                displayTasks();
+            }
+        }
+
+        function filterTasks(filter) {
+            currentFilter = filter;
+            displayTasks();
+        }
+
+        function displayTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+            
+            let filteredTasks = tasks;
+            
+            if (currentFilter === 'completed') {
+                filteredTasks = tasks.filter(task => task.completed);
+            } else if (currentFilter === 'pending') {
+                filteredTasks = tasks.filter(task => !task.completed);
+            }
+            
+            filteredTasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = task.completed ? 'completed' : '';
+                
+                li.innerHTML = `
+                    <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    ${task.text}
+                    <button onclick="deleteTask(${task.id})">Delete</button>
+                `;
+                
+                taskList.appendChild(li);
+            });
+            
+            updateCompletedCount();
+        }
+
+        function updateCompletedCount() {
+            const completedCount = tasks.filter(task => task.completed).length;
+            document.getElementById('completedCount').textContent = completedCount;
+        }
+    </script>
+</body>
+</html>

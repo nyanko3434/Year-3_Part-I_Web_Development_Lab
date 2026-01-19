@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Analyzer</title>
+    <style>
+        .pass { background-color: lightgreen; }
+        .fail { background-color: lightcoral; }
+        table { border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Student Marks & Grade Analyzer</h1>
+    
+    <div>
+        <label>Student Name: <input type="text" id="studentName"></label><br><br>
+        
+        <label>Number of Subjects: <input type="number" id="numSubjects" min="1"></label>
+        <button onclick="generateSubjectInputs()">Generate Subject Fields</button>
+        <br><br>
+        
+        <div id="subjectInputs"></div>
+        <br>
+        
+        <button onclick="calculateResult()">Calculate Result</button>
+    </div>
+    
+    <div id="resultTable"></div>
+
+    <script>
+        let student = {};
+
+        function generateSubjectInputs() {
+            const numSubjects = parseInt(document.getElementById('numSubjects').value);
+            const container = document.getElementById('subjectInputs');
+            container.innerHTML = '';
+            
+            if (numSubjects > 0) {
+                for (let i = 1; i <= numSubjects; i++) {
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <label>Subject ${i} Name: <input type="text" id="subjectName${i}"></label>
+                        <label>Marks: <input type="number" id="marks${i}" min="0" max="100"></label>
+                        <br>
+                    `;
+                    container.appendChild(div);
+                }
+            }
+        }
+
+        function calculateGrade(percentage) {
+            if (percentage >= 80) return 'A';
+            if (percentage >= 60) return 'B';
+            if (percentage >= 40) return 'C';
+            return 'F';
+        }
+
+        function getSubjectStatus(marks) {
+            return marks >= 40 ? 'Pass' : 'Fail';
+        }
+
+        function calculateResult() {
+            const studentName = document.getElementById('studentName').value;
+            const numSubjects = parseInt(document.getElementById('numSubjects').value);
+            
+            if (!studentName || !numSubjects) {
+                alert('Please enter student name and number of subjects!');
+                return;
+            }
+            
+            student = {
+                name: studentName,
+                subjects: [],
+                total: 0,
+                percentage: 0,
+                grade: '',
+                status: ''
+            };
+            
+            for (let i = 1; i <= numSubjects; i++) {
+                const subjectName = document.getElementById(`subjectName${i}`).value;
+                const marks = parseFloat(document.getElementById(`marks${i}`).value);
+                
+                if (!subjectName || isNaN(marks)) {
+                    alert('Please fill all subject fields!');
+                    return;
+                }
+                
+                const subjectStatus = getSubjectStatus(marks);
+                student.subjects.push({ 
+                    name: subjectName, 
+                    marks: marks,
+                    status: subjectStatus
+                });
+                student.total += marks;
+            }
+            
+            student.percentage = (student.total / (numSubjects * 100)) * 100;
+            student.grade = calculateGrade(student.percentage);
+            
+            // Check if any subject is failed
+            const hasFailedSubject = student.subjects.some(subject => subject.status === 'Fail');
+            student.status = hasFailedSubject ? 'Fail' : 'Pass';
+            
+            displayResult();
+        }
+
+        function displayResult() {
+            const resultDiv = document.getElementById('resultTable');
+            
+            let subjectsHTML = '';
+            student.subjects.forEach(subject => {
+                const rowClass = subject.status === 'Pass' ? 'pass' : 'fail';
+                subjectsHTML += `
+                    <tr class="${rowClass}">
+                        <td>${subject.name}</td>
+                        <td>${subject.marks}</td>
+                        <td>${subject.status}</td>
+                    </tr>
+                `;
+            });
+            
+            const overallRowClass = student.status === 'Pass' ? 'pass' : 'fail';
+            
+            resultDiv.innerHTML = `
+                <h2>Result</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th colspan="2">${student.name}</th>
+                        </tr>
+                        <tr>
+                            <th>Subject Name</th>
+                            <th>Marks</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${subjectsHTML}
+                        <tr class="${overallRowClass}">
+                            <td><strong>Total Marks</strong></td>
+                            <td colspan="2"><strong>${student.total}</strong></td>
+                        </tr>
+                        <tr class="${overallRowClass}">
+                            <td><strong>Percentage</strong></td>
+                            <td colspan="2"><strong>${student.percentage.toFixed(2)}%</strong></td>
+                        </tr>
+                        <tr class="${overallRowClass}">
+                            <td><strong>Grade</strong></td>
+                            <td colspan="2"><strong>${student.grade}</strong></td>
+                        </tr>
+                        <tr class="${overallRowClass}">
+                            <td><strong>Overall Status</strong></td>
+                            <td colspan="2"><strong>${student.status}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+    </script>
+</body>
+</html>

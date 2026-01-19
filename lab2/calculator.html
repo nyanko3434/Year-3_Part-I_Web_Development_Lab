@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Calculator</title>
+</head>
+<body>
+    <h1>Smart Calculator</h1>
+    
+    <div>
+        <input type="text" id="display" readonly>
+    </div>
+    
+    <div>
+        <button onclick="appendToDisplay('7')">7</button>
+        <button onclick="appendToDisplay('8')">8</button>
+        <button onclick="appendToDisplay('9')">9</button>
+        <button onclick="appendToDisplay('/')">/</button>
+        <br>
+        <button onclick="appendToDisplay('4')">4</button>
+        <button onclick="appendToDisplay('5')">5</button>
+        <button onclick="appendToDisplay('6')">6</button>
+        <button onclick="appendToDisplay('*')">*</button>
+        <br>
+        <button onclick="appendToDisplay('1')">1</button>
+        <button onclick="appendToDisplay('2')">2</button>
+        <button onclick="appendToDisplay('3')">3</button>
+        <button onclick="appendToDisplay('-')">-</button>
+        <br>
+        <button onclick="appendToDisplay('0')">0</button>
+        <button onclick="appendToDisplay('.')">.</button>
+        <button onclick="calculate()">=</button>
+        <button onclick="appendToDisplay('+')">+</button>
+        <br>
+        <button onclick="clearDisplay()">C</button>
+    </div>
+    
+    <h2>History (Last 5 Calculations)</h2>
+    <button onclick="clearHistory()">Clear History</button>
+    <ul id="history"></ul>
+
+    <script>
+        let history = [];
+        const maxHistory = 5;
+
+        function appendToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        function calculate() {
+            const display = document.getElementById('display');
+            const expression = display.value;
+            
+            try {
+                // Check for division by zero
+                if (expression.includes('/0')) {
+                    alert('Error: Division by zero!');
+                    return;
+                }
+                
+                const result = eval(expression);
+                
+                if (!isFinite(result)) {
+                    alert('Error: Invalid calculation!');
+                    return;
+                }
+                
+                // Add to history
+                const calculation = `${expression} = ${result}`;
+                history.unshift(calculation);
+                
+                // Keep only last 5
+                if (history.length > maxHistory) {
+                    history = history.slice(0, maxHistory);
+                }
+                
+                display.value = result;
+                updateHistoryDisplay();
+                
+            } catch (error) {
+                alert('Error: Invalid expression!');
+            }
+        }
+
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('history');
+            historyList.innerHTML = '';
+            
+            history.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                historyList.appendChild(li);
+            });
+        }
+
+        function clearHistory() {
+            history = [];
+            updateHistoryDisplay();
+        }
+    </script>
+</body>
+</html>

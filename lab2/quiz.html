@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Development Quiz</title>
+</head>
+<body>
+    <h1>Web Development Quiz</h1>
+    
+    <div id="quizContainer">
+        <div id="questionArea">
+            <p>Question <span id="questionNumber">1</span> of 6</p>
+            <h3 id="questionText"></h3>
+            <div id="optionsContainer"></div>
+        </div>
+        
+        <div id="navigationButtons">
+            <button id="prevBtn" onclick="previousQuestion()" disabled>Previous</button>
+            <button id="nextBtn" onclick="nextQuestion()">Next</button>
+            <button id="submitBtn" onclick="submitQuiz()" style="display: none;">Submit Quiz</button>
+        </div>
+    </div>
+    
+    <div id="resultContainer" style="display: none;">
+        <h2>Quiz Results</h2>
+        <p>Your Score: <span id="finalScore"></span> out of 6</p>
+        <p>Percentage: <span id="percentage"></span>%</p>
+        <div id="answersReview"></div>
+        <button onclick="restartQuiz()">Restart Quiz</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What does HTML stand for?",
+                options: [
+                    "Hyper Text Markup Language",
+                    "High Tech Modern Language",
+                    "Home Tool Markup Language",
+                    "Hyperlinks and Text Markup Language"
+                ],
+                correct: 0
+            },
+            {
+                question: "Which CSS property is used to change the text color?",
+                options: [
+                    "text-color",
+                    "font-color",
+                    "color",
+                    "text-style"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the correct syntax for referring to an external JavaScript file?",
+                options: [
+                    "script tag with href attribute",
+                    "script tag with name attribute",
+                    "script tag with src attribute",
+                    "js tag with src attribute"
+                ],
+                correct: 2
+            },
+            {
+                question: "Which method is used to select an element by ID in JavaScript?",
+                options: [
+                    "getElementByID()",
+                    "getElementById()",
+                    "selectElementById()",
+                    "findElementById()"
+                ],
+                correct: 1
+            },
+            {
+                question: "What does CSS stand for?",
+                options: [
+                    "Creative Style Sheets",
+                    "Cascading Style Sheets",
+                    "Computer Style Sheets",
+                    "Colorful Style Sheets"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which HTML tag is used to create a hyperlink?",
+                options: [
+                    "link tag",
+                    "anchor tag",
+                    "href tag",
+                    "hyperlink tag"
+                ],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let score = 0;
+
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            
+            document.getElementById('questionNumber').textContent = currentQuestion + 1;
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label>
+                        <input type="radio" name="answer" value="${index}" 
+                            ${userAnswers[currentQuestion] === index ? 'checked' : ''}
+                            onchange="selectAnswer(${index})">
+                        ${option}
+                    </label>
+                `;
+                optionsContainer.appendChild(div);
+            });
+            
+            updateNavigationButtons();
+        }
+
+        function selectAnswer(answerIndex) {
+            userAnswers[currentQuestion] = answerIndex;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function submitQuiz() {
+            score = 0;
+            
+            questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correct) {
+                    score++;
+                }
+            });
+            
+            displayResults();
+        }
+
+        function displayResults() {
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            
+            const percentage = ((score / questions.length) * 100).toFixed(2);
+            
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('percentage').textContent = percentage;
+            
+            const reviewContainer = document.getElementById('answersReview');
+            reviewContainer.innerHTML = '<h3>Answer Review:</h3>';
+            
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                
+                const reviewDiv = document.createElement('div');
+                reviewDiv.innerHTML = `
+                    <p><strong>Q${index + 1}: ${question.question}</strong></p>
+                    <p>Your answer: ${userAnswer !== null ? question.options[userAnswer] : 'Not answered'} 
+                        ${isCorrect ? '✅' : '❌'}</p>
+                    ${!isCorrect ? `<p>Correct answer: ${question.options[question.correct]}</p>` : ''}
+                    <hr>
+                `;
+                reviewContainer.appendChild(reviewDiv);
+            });
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            score = 0;
+            
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+            
+            loadQuestion();
+        }
+
+        // Initialize quiz on page load
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>

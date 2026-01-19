@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+</head>
+<body>
+    <h1>Number Guessing Game</h1>
+    <p>Guess a number between 1 and 100!</p>
+    
+    <div>
+        <p>Score: <span id="score">10</span></p>
+        <p>Attempts Left: <span id="attemptsLeft">10</span></p>
+    </div>
+    
+    <div id="gameArea">
+        <input type="number" id="guessInput" min="1" max="100" placeholder="Enter your guess">
+        <button onclick="checkGuess()">Submit Guess</button>
+    </div>
+    
+    <p id="feedback"></p>
+    <button id="restartBtn" onclick="restartGame()" style="display: none;">Play Again</button>
+
+    <script>
+        let randomNumber;
+        let score;
+        let attemptsLeft;
+        let gameOver;
+
+        function initGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            score = 10;
+            attemptsLeft = 10;
+            gameOver = false;
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('attemptsLeft').textContent = attemptsLeft;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('guessInput').value = '';
+            document.getElementById('guessInput').disabled = false;
+            document.getElementById('restartBtn').style.display = 'none';
+        }
+
+        function checkGuess() {
+            if (gameOver) return;
+            
+            const guess = parseInt(document.getElementById('guessInput').value);
+            const feedback = document.getElementById('feedback');
+            
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                feedback.textContent = 'Please enter a valid number between 1 and 100!';
+                return;
+            }
+            
+            attemptsLeft--;
+            document.getElementById('attemptsLeft').textContent = attemptsLeft;
+            
+            if (guess === randomNumber) {
+                feedback.textContent = `🎉 Correct! The number was ${randomNumber}. Your final score: ${score}`;
+                feedback.style.color = 'green';
+                endGame();
+            } else {
+                score--;
+                document.getElementById('score').textContent = score;
+                
+                if (attemptsLeft === 0) {
+                    feedback.textContent = `Game Over! You ran out of attempts. The number was ${randomNumber}. Final score: ${score}`;
+                    feedback.style.color = 'red';
+                    endGame();
+                } else {
+                    if (guess < randomNumber) {
+                        feedback.textContent = '📈 Too Low! Try a higher number.';
+                        feedback.style.color = 'blue';
+                    } else {
+                        feedback.textContent = '📉 Too High! Try a lower number.';
+                        feedback.style.color = 'orange';
+                    }
+                }
+            }
+            
+            document.getElementById('guessInput').value = '';
+        }
+
+        function endGame() {
+            gameOver = true;
+            document.getElementById('guessInput').disabled = true;
+            document.getElementById('restartBtn').style.display = 'inline-block';
+        }
+
+        function restartGame() {
+            initGame();
+        }
+
+        // Initialize game on page load
+        window.onload = initGame;
+
+        // Allow Enter key to submit guess
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('guessInput').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    checkGuess();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
