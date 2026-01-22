@@ -1,3 +1,4 @@
+from unicodedata import name
 from django.shortcuts import render
 from django.http import HttpResponse
 
@@ -6,4 +7,4 @@ def index(request):
     print (request)
     print (request.method)
     print (request.headers)
-    return HttpResponse("<h1>Welcome to the Student Management System</h1>")
+    return render(request, 'student_app/index.html', {'name': 'Student Management System'})
