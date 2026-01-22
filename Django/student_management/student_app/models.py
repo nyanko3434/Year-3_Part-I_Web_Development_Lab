@@ -10,13 +10,6 @@ class Student(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.enrollment_number})"
-
-#for python manage.py shell to insert initial data
-# python manage.py shell
-# from student_app.models import Student, Course
-
-# course1 = Course(course_name="Mathematics", course_code="MATH101", description="Basic Mathematics Course")
-# course1.save()    
 class Course(models.Model):
     course_name = models.CharField(max_length=100)
     course_code = models.CharField(max_length=10, unique=True)
