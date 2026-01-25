@@ -1,12 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Management System</title>
-</head>
-<body>
-    <h1>Welcome to the {{name}}</h1>
-    <!-- <h2>{{ name }}</h2> -->
-</body>
-</html>
+{% extends "student_app/base.html" %}
+
+{% block title %}Home - Student Management{% endblock %}
+
+{% block content %}
+    <h2>Welcome to the Student Management System</h2>
+    <p>Use the navigation above to manage student records.</p>
+
+    {% if request.user%} <p>Hello! {{request.user.username}} | <a href="/account/logout/">logout{% endif %}</a></p>
+
+    {% for student in students %}
+        <div class="student-card">
+            <h3>{{ student.first_name }} {{ student.last_name }}</h3>
+            <p>Enrollment Number: {{ student.enrollment_number }}</p>
+            <p>Date of Birth: {{ student.date_of_birth }}</p>
+            <p>Email: {{ student.email }}</p>
+            <a href="{% url 'edit-student' student.id %}">Edit</a> |
+        </div>
+    {% empty %}
+        <p>No students found.</p>
+    {% endfor %}
+{% endblock %}
