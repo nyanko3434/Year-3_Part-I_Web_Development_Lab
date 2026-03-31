@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Validation</title>
+  <style>
+    .error { color: red; font-size: 13px; }
+    input { display: block; margin-bottom: 4px; padding: 6px; width: 260px; }
+    label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Form Validation</h1>
+ 
+  <div>
+    <label>Name</label>
+    <input type="text" id="name" placeholder="Full name">
+    <span class="error" id="nameError"></span>
+  </div>
+ 
+  <div>
+    <label>Email</label>
+    <input type="text" id="email" placeholder="example@email.com">
+    <span class="error" id="emailError"></span>
+  </div>
+ 
+  <div>
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Min 8 characters">
+    <span class="error" id="passwordError"></span>
+  </div>
+ 
+  <div>
+    <label>Confirm Password</label>
+    <input type="password" id="confirm" placeholder="Repeat password">
+    <span class="error" id="confirmError"></span>
+  </div>
+ 
+  <button onclick="validateForm()">Submit</button>
+  <p id="successMsg" style="color:green;"></p>
+ 
+  <script>
+    function validateForm() {
+      const name     = document.getElementById('name').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm  = document.getElementById('confirm').value;
+ 
+      // Clear previous errors
+      document.getElementById('nameError').textContent     = '';
+      document.getElementById('emailError').textContent    = '';
+      document.getElementById('passwordError').textContent = '';
+      document.getElementById('confirmError').textContent  = '';
+      document.getElementById('successMsg').textContent    = '';
+ 
+      let isValid = true;
+ 
+      // Name: required, letters only
+      if (name === '') {
+        document.getElementById('nameError').textContent = 'Name is required.';
+        isValid = false;
+      } else if (!/^[a-zA-Zs]+$/.test(name)) {
+        document.getElementById('nameError').textContent = 'Name must contain letters only.';
+        isValid = false;
+      }
+ 
+      // Email: required, basic format check
+      if (email === '') {
+        document.getElementById('emailError').textContent = 'Email is required.';
+        isValid = false;
+      } else if (!/^[^s@]+@[^s@]+.[^s@]+$/.test(email)) {
+        document.getElementById('emailError').textContent = 'Enter a valid email address.';
+        isValid = false;
+      }
+ 
+      // Password: min 8 characters
+      if (password === '') {
+        document.getElementById('passwordError').textContent = 'Password is required.';
+        isValid = false;
+      } else if (password.length < 8) {
+        document.getElementById('passwordError').textContent = 'Password must be at least 8 characters.';
+        isValid = false;
+      }
+ 
+      // Confirm password
+      if (confirm !== password) {
+        document.getElementById('confirmError').textContent = 'Passwords do not match.';
+        isValid = false;
+      }
+ 
+      if (isValid) {
+        document.getElementById('successMsg').textContent = 'Form submitted successfully!';
+      }
+    }
+  </script>
+</body>
+</html>

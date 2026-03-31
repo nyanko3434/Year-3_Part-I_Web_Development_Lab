@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Digital Clock & Countdown Timer</title>
+</head>
+<body>
+  <h1>Digital Clock</h1>
+  <p id="clock"></p>
+ 
+  <h2>Countdown Timer</h2>
+  <label>Seconds: <input type="number" id="timerInput" min="1"></label>
+  <button onclick="startTimer()">Start</button>
+  <button onclick="stopTimer()">Stop</button>
+  <button onclick="resetTimer()">Reset</button>
+  <p id="timerDisplay">--</p>
+ 
+  <script>
+    // --- Digital Clock ---
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clock').textContent = h + ':' + m + ':' + s;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+ 
+    // --- Countdown Timer ---
+    let timerInterval = null;
+    let timeLeft = 0;
+ 
+    function startTimer() {
+      if (timerInterval) return;
+      const input = parseInt(document.getElementById('timerInput').value);
+      if (isNaN(input) || input < 1) {
+        alert('Please enter a valid number of seconds.');
+        return;
+      }
+      timeLeft = input;
+      updateTimerDisplay();
+      timerInterval = setInterval(function() {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          alert('Time is up!');
+        }
+      }, 1000);
+    }
+ 
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+ 
+    function resetTimer() {
+      stopTimer();
+      timeLeft = 0;
+      document.getElementById('timerDisplay').textContent = '--';
+    }
+ 
+    function updateTimerDisplay() {
+      const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const s = String(timeLeft % 60).padStart(2, '0');
+      document.getElementById('timerDisplay').textContent = m + ':' + s;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Theme Manager</title>
+</head>
+<body id="pageBody">
+  <h1 id="pageTitle">Event-Driven Theme Manager</h1>
+  <p id="pageText">Select a theme below to change the look of this page.</p>
+ 
+  <div>
+    <button onclick="applyTheme('dark')">Dark Theme</button>
+    <button onclick="applyTheme('ocean')">Ocean Theme</button>
+    <button onclick="applyTheme('forest')">Forest Theme</button>
+    <button onclick="resetTheme()">Reset to Default</button>
+  </div>
+ 
+  <p>Current Theme: <span id="themeName">Default</span></p>
+ 
+  <script>
+    // Themes stored as objects
+    const themes = {
+      dark: {
+        background: '#212121',
+        text:       '#f5f5f5',
+        button:     '#444444',
+        name:       'Dark'
+      },
+      ocean: {
+        background: '#e0f7fa',
+        text:       '#006064',
+        button:     '#0097a7',
+        name:       'Ocean'
+      },
+      forest: {
+        background: '#e8f5e9',
+        text:       '#1b5e20',
+        button:     '#388e3c',
+        name:       'Forest'
+      }
+    };
+ 
+    const defaultTheme = {
+      background: '#ffffff',
+      text:       '#000000',
+      button:     '',
+      name:       'Default'
+    };
+ 
+    // Store the currently selected theme
+    let currentTheme = defaultTheme;
+ 
+    function applyTheme(key) {
+      const theme = themes[key];
+      if (!theme) return;
+ 
+      currentTheme = theme;
+ 
+      document.getElementById('pageBody').style.backgroundColor = theme.background;
+      document.getElementById('pageTitle').style.color          = theme.text;
+      document.getElementById('pageText').style.color           = theme.text;
+      document.getElementById('themeName').textContent          = theme.name;
+ 
+      // Apply button color to all buttons
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(function(btn) {
+        btn.style.backgroundColor = theme.button;
+        btn.style.color           = theme.text;
+      });
+    }
+ 
+    function resetTheme() {
+      currentTheme = defaultTheme;
+ 
+      document.getElementById('pageBody').style.backgroundColor = defaultTheme.background;
+      document.getElementById('pageTitle').style.color          = defaultTheme.text;
+      document.getElementById('pageText').style.color           = defaultTheme.text;
+      document.getElementById('themeName').textContent          = defaultTheme.name;
+ 
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(function(btn) {
+        btn.style.backgroundColor = '';
+        btn.style.color           = '';
+      });
+    }
+  </script>
+</body>
+</html>

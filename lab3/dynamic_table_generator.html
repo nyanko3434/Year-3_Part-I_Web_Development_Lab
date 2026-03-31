@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Table Generator</title>
+  <style>
+    table { border-collapse: collapse; margin-top: 16px; }
+    th, td { border: 1px solid #999; padding: 8px 14px; text-align: center; }
+    tr.even { background-color: #cce5ff; }
+  </style>
+</head>
+<body>
+  <h1>Dynamic Table Generator</h1>
+ 
+  <label>Rows: <input type="number" id="rows" min="1" value="3"></label>
+  <label>Columns: <input type="number" id="cols" min="1" value="3"></label>
+  <button onclick="generateTable()">Generate</button>
+  <button onclick="addRow()">Add Row</button>
+  <button onclick="deleteRow()">Delete Row</button>
+  <button onclick="highlightEvenRows()">Highlight Even Rows</button>
+ 
+  <div id="tableContainer"></div>
+ 
+  <script>
+    let rows = 0;
+    let cols = 0;
+ 
+    function generateTable() {
+      rows = parseInt(document.getElementById('rows').value);
+      cols = parseInt(document.getElementById('cols').value);
+ 
+      if (isNaN(rows) || isNaN(cols) || rows < 1 || cols < 1) {
+        alert('Please enter valid rows and columns.');
+        return;
+      }
+ 
+      const container = document.getElementById('tableContainer');
+      container.innerHTML = '';
+ 
+      const table = document.createElement('table');
+      table.id = 'dataTable';
+ 
+      for (let i = 0; i < rows; i++) {
+        const tr = document.createElement('tr');
+        for (let j = 0; j < cols; j++) {
+          const td = document.createElement('td');
+          td.textContent = 'R' + (i + 1) + 'C' + (j + 1);
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+ 
+      container.appendChild(table);
+    }
+ 
+    function addRow() {
+      const table = document.getElementById('dataTable');
+      if (!table) { alert('Generate a table first.'); return; }
+ 
+      rows++;
+      const tr = document.createElement('tr');
+      const numCols = table.rows[0].cells.length;
+      for (let j = 0; j < numCols; j++) {
+        const td = document.createElement('td');
+        td.textContent = 'R' + rows + 'C' + (j + 1);
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+    }
+ 
+    function deleteRow() {
+      const table = document.getElementById('dataTable');
+      if (!table || table.rows.length === 0) { alert('No rows to delete.'); return; }
+      table.deleteRow(table.rows.length - 1);
+      rows--;
+    }
+ 
+    function highlightEvenRows() {
+      const table = document.getElementById('dataTable');
+      if (!table) { alert('Generate a table first.'); return; }
+ 
+      const allRows = table.rows;
+      for (let i = 0; i < allRows.length; i++) {
+        allRows[i].classList.remove('even');
+        if ((i + 1) % 2 === 0) {
+          allRows[i].classList.add('even');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
